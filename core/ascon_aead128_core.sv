@@ -3,20 +3,21 @@
  * version     : 1.0
  * description :
  *      input(s):
- *        - clk         :
- *        - rst_n       :
- *        - start       :
- *        - valid_ad    :
- *        - valid_db_in :
- *        - ad          :
- *        - db          :
- *        - key         :
- *        - nonce       :
+ *        - clk         : clock
+ *        - rst_n       : asynchronous active-low reset
+ *        - start       : tart encryption/decryption, deassert before sending
+ *                        last data block
+ *        - valid_ad    : validity signal of associated data
+ *        - valid_db_in : validity signal of input data block
+ *        - ad          : associated data
+ *        - db          : input data block
+ *        - key         : key
+ *        - nonce       : nonce
  *      output(s):
- *        - ready        :
- *        - valid_db_out :
- *        - valid_tag    :
- *        - dout         :
+ *        - ready        : ready signal
+ *        - valid_db_out : validity signal of output data block
+ *        - valid_tag    : validity signal of tag
+ *        - dout         : output data block or tag
  ******************************************************************************/
 
 import ascon_aead128_pkg::round;
