@@ -135,10 +135,6 @@ class uint128_ex;
         return this._uint128;
     endfunction
 
-    function logic [127:0] get_as_logic;
-        return {logic'(this._uint128.msb), logic'(this._uint128.lsb)};
-    endfunction
-
     function string get_as_string;
         string s;
         $sformat(s, "%h%h", this._uint128.msb, this._uint128.lsb);
@@ -169,7 +165,7 @@ endclass
 class key_ex extends uint128_ex;
 
     function void display_packed;
-        $display("key : 128'h%h", this.get_as_logic());
+        $display("key : %s", this.get_as_string());
     endfunction;
 
     function void display_unpacked;
@@ -181,7 +177,7 @@ endclass
 class nonce_ex extends uint128_ex;
 
     function void display_packed;
-        $display("nonce : 128'h%h", this.get_as_logic());
+        $display("nonce : %s", this.get_as_string());
     endfunction;
 
     function void display_unpacked;
@@ -193,7 +189,7 @@ endclass
 class tag_ex extends uint128_ex;
 
     function void display_packed;
-        $display("tag : 128'h%h", this.get_as_logic());
+        $display("tag : %s", this.get_as_string());
     endfunction;
 
     function void display_unpacked;
