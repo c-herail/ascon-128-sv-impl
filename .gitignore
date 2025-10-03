@@ -4,5 +4,6 @@
 /synth
 
 transcript
+*.vstf
 *.wlf
 *.ini
