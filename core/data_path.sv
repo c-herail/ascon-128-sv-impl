@@ -5,9 +5,10 @@
  *      input(s):
  *        - clk          : clock
  *        - rst_n        : asynchronous active-low reset
+ *        - op_mode      : operation mode (encryption/decryption)
  *        - rnd          : round value
  *        - en_internal  : store new internal state
- *        - en_new_key   : store new key
+ *        - en_new_aead  : store new key and operation mode
  *        - sel_state    : select state (loop or new input)
  *        - sel_din      : select input data (data block or associated data)
  *        - sel_dout     : select output data (data block or tag)
@@ -29,9 +30,10 @@ import ascon_aead128_pkg::IV;
 module data_path (
     input  logic         clk,
     input  logic         rst_n,
+    input  logic         op_mode,
     input  round         rnd,
     input  logic         en_internal,
-    input  logic         en_new_key,
+    input  logic         en_new_aead,
     input  logic         sel_state,
     input  logic         sel_din,
     input  logic         sel_dout,
@@ -49,6 +51,8 @@ module data_path (
     ascon_state internal_state_s;
     ascon_state p_s;
     ascon_state loop_s;
+
+    logic sel_mode_s;
 
     logic [127:0] din_s;
     logic [127:0] key_s;
@@ -84,9 +88,18 @@ module data_path (
     KEY_REG (
         .clk  (clk),
         .rst_n(rst_n),
-        .en   (en_new_key),
+        .en   (en_new_aead),
         .d    (key),
         .q    (key_s)
+    );
+
+    data_reg #(.WIDTH(1))
+    AEAD_REG (
+        .clk  (clk),
+        .rst_n(rst_n),
+        .en   (en_new_aead),
+        .d    (op_mode),
+        .q    (sel_mode_s)
     );
 
     data_reg #(.WIDTH($bits(ascon_state)))
@@ -104,11 +117,13 @@ module data_path (
         .next_state   (p_s)
     );
 
-    mux21 #(.WIDTH(128))
+    mux41 #(.WIDTH(128))
     DATA_XOR_MUX (
-        .sel(sel_xor_data),
+        .sel({sel_xor_data, sel_mode_s & sel_din}),
         .a  ({p_s.s0, p_s.s1}),
-        .b  ({p_s.s0, p_s.s1} ^ din_s),
+        .b  ({p_s.s0, p_s.s1}),
+        .c  ({p_s.s0, p_s.s1} ^ din_s),
+        .d  (din_s),
         .s  ({loop_s.s0, loop_s.s1})
     );
 
@@ -123,7 +138,7 @@ module data_path (
     );
 
     always_comb begin : db_and_tag
-        db_s  = {loop_s.s0, loop_s.s1};
+        db_s  = {p_s.s0, p_s.s1} ^ din_s;
         tag_s = {loop_s.s3, loop_s.s4};
     end
 

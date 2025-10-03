@@ -26,6 +26,7 @@ module ascon_aead128_core_tb ();
     logic         clk;
     logic         rst_n;
     logic         start;
+    logic         op_mode;
     logic         valid_ad;
     logic         valid_db_in;
     logic [127:0] ad;
@@ -151,9 +152,11 @@ module ascon_aead128_core_tb ();
         end
     endtask
 
-    task finalisation(bit is_enc);
-        automatic string msg = (is_enc)? "Error : encryption failed (tag)" :
-                                         "Error : decryption failed (tag)";
+    task finalisation;
+        automatic string msg =
+            (op_mode == AE_MODE)?
+            "Error : encryption failed (tag)" :
+            "Error : decryption failed (tag)";
         @(posedge valid_tag);
         #1;
         if (dout != {t.msb, t.lsb}) begin
@@ -165,6 +168,8 @@ module ascon_aead128_core_tb ();
     endtask
 
     task aead;
+        op_mode = AE_MODE;
+
         ad_arr = new[i];
         p_arr = new[j];
         c_arr = new[j];
@@ -190,7 +195,14 @@ module ascon_aead128_core_tb ();
         initialisation();
         associated_data();
         plaintext();
-        finalisation(1'b1);
+        finalisation();
+
+        op_mode = AD_MODE;
+
+        initialisation();
+        associated_data();
+        ciphertext();
+        finalisation();
 
         ad_arr.delete();
         p_arr.delete();
@@ -205,6 +217,7 @@ module ascon_aead128_core_tb ();
     initial begin : main
         rst_n = 1'b0;
         start = 1'b0;
+        op_mode = 1'b0;
         valid_ad = 1'b0;
         valid_db_in = 1'b0;
         ad = '0;
@@ -215,8 +228,8 @@ module ascon_aead128_core_tb ();
         @(posedge clk);
         rst_n = 1'b1;
 
-        for (i = 0; i < 4; i++) begin
-            for (j = 1; j < 6; j++) begin
+        for (i = 0; i < 5; i++) begin
+            for (j = 1; j < 5; j++) begin
                 aead();
             end
         end;

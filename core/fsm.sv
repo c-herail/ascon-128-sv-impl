@@ -14,7 +14,7 @@
  *        - rnd_cnt_mode : mode of round counter
  *        - rnd_cnt_incr : increment round counter
  *        - en_internal  : store new internal state
- *        - en_new_key   : store new key
+ *        - en_new_aead  : store new key and operation mode
  *        - sel_state    : select state (loop or new input)
  *        - sel_din      : select input data (data block or associated data)
  *        - sel_dout     : select output data (data block or tag)
@@ -38,7 +38,7 @@ module fsm (
     output logic       rnd_cnt_mode,
     output logic       rnd_cnt_incr,
     output logic       en_internal,
-    output logic       en_new_key,
+    output logic       en_new_aead,
     output logic       sel_state,
     output logic       sel_din,
     output logic       sel_dout,
@@ -170,7 +170,7 @@ module fsm (
         rnd_cnt_incr = NO_INCR;
 
         en_internal = 1'b0;
-        en_new_key  = 1'b0;
+        en_new_aead = 1'b0;
 
         sel_state    = SEL_LOOP_STATE;
         sel_din      = SEL_AD;
@@ -188,7 +188,7 @@ module fsm (
         case (current_state_s)
             startup : begin
                 en_internal = 1'b1;
-                en_new_key  = 1'b1;
+                en_new_aead = 1'b1;
 
                 sel_state = SEL_INPUT_STATE;
             end

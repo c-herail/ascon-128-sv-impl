@@ -7,6 +7,7 @@
  *        - rst_n       : asynchronous active-low reset
  *        - start       : tart encryption/decryption, deassert before sending
  *                        last data block
+ *        - op_mode     : operation mode (encryption/decryption)
  *        - valid_ad    : validity signal of associated data
  *        - valid_db_in : validity signal of input data block
  *        - ad          : associated data
@@ -26,6 +27,7 @@ module ascon_aead128_core (
     input  logic         clk,
     input  logic         rst_n,
     input  logic         start,
+    input  logic         op_mode,
     input  logic         valid_ad,
     input  logic         valid_db_in,
     input  logic [127:0] ad,
@@ -38,7 +40,7 @@ module ascon_aead128_core (
     output logic [127:0] dout );
 
     logic en_internal_s;
-    logic en_new_key_s;
+    logic en_new_aead_s;
 
     logic       sel_state_s;
     logic       sel_din_s;
@@ -63,7 +65,7 @@ module ascon_aead128_core (
         .rnd_cnt_mode(rnd_cnt_mode_s),
         .rnd_cnt_incr(rnd_cnt_incr_s),
         .en_internal (en_internal_s),
-        .en_new_key  (en_new_key_s),
+        .en_new_aead (en_new_aead_s),
         .sel_state   (sel_state_s),
         .sel_din     (sel_din_s),
         .sel_dout    (sel_dout_s),
@@ -86,9 +88,10 @@ module ascon_aead128_core (
     data_path DATA_PATH (
         .clk         (clk),
         .rst_n       (rst_n),
+        .op_mode     (op_mode),
         .rnd         (rnd_s),
         .en_internal (en_internal_s),
-        .en_new_key  (en_new_key_s),
+        .en_new_aead (en_new_aead_s),
         .sel_state   (sel_state_s),
         .sel_din     (sel_din_s),
         .sel_dout    (sel_dout_s),

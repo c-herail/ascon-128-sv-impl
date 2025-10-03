@@ -70,6 +70,10 @@ localparam round P12_INIT = 4'h4;
 
 /** parameters for data_path control ******************************************/
 
+// op_mode/sel_mode values
+localparam logic AD_MODE = 1'b1;
+localparam logic AE_MODE = 1'b0;
+
 // sel_din sel values
 localparam logic SEL_DB = 1'b1;
 localparam logic SEL_AD = 1'b0;
