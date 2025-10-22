@@ -96,4 +96,90 @@ localparam logic [1:0] SEL_KEY_NO_XOR = 2'd0;
 localparam logic SEL_TAG  = 1'b1;
 localparam logic SEL_DATA = 1'b0;
 
+/** parameters for axi4-lite interface ****************************************/
+
+localparam logic [1:0] OKAY_RESPONSE  = 2'b00;
+localparam logic [1:0] SLERR_RESPONSE = 2'b10;
+
+localparam logic READ_ONLY  = 1'b0;
+localparam logic READ_WRITE = 1'b1;
+
+localparam int unsigned ASCON_AEAD128_BASE_ADDR = 0;
+
+// nonce registers
+localparam int unsigned NONCE0_ADDR = ASCON_AEAD128_BASE_ADDR + 32'h00;
+localparam int unsigned NONCE1_ADDR = ASCON_AEAD128_BASE_ADDR + 32'h04;
+localparam int unsigned NONCE2_ADDR = ASCON_AEAD128_BASE_ADDR + 32'h08;
+localparam int unsigned NONCE3_ADDR = ASCON_AEAD128_BASE_ADDR + 32'h0C;
+
+localparam logic NONCE0_RW = READ_WRITE;
+localparam logic NONCE1_RW = READ_WRITE;
+localparam logic NONCE2_RW = READ_WRITE;
+localparam logic NONCE3_RW = READ_WRITE;
+
+// key registers
+localparam int unsigned KEY0_ADDR = ASCON_AEAD128_BASE_ADDR + 32'h10;
+localparam int unsigned KEY1_ADDR = ASCON_AEAD128_BASE_ADDR + 32'h14;
+localparam int unsigned KEY2_ADDR = ASCON_AEAD128_BASE_ADDR + 32'h18;
+localparam int unsigned KEY3_ADDR = ASCON_AEAD128_BASE_ADDR + 32'h1C;
+
+localparam logic KEY0_RW = READ_WRITE;
+localparam logic KEY1_RW = READ_WRITE;
+localparam logic KEY2_RW = READ_WRITE;
+localparam logic KEY3_RW = READ_WRITE;
+
+// data input registers
+localparam int unsigned DIN0_ADDR = ASCON_AEAD128_BASE_ADDR + 32'h20;
+localparam int unsigned DIN1_ADDR = ASCON_AEAD128_BASE_ADDR + 32'h24;
+localparam int unsigned DIN2_ADDR = ASCON_AEAD128_BASE_ADDR + 32'h28;
+localparam int unsigned DIN3_ADDR = ASCON_AEAD128_BASE_ADDR + 32'h2C;
+
+localparam logic DIN0_RW = READ_WRITE;
+localparam logic DIN1_RW = READ_WRITE;
+localparam logic DIN2_RW = READ_WRITE;
+localparam logic DIN3_RW = READ_WRITE;
+
+// associated data registers
+localparam int unsigned ASSOCIATED_DATA0_ADDR = ASCON_AEAD128_BASE_ADDR + 32'h30;
+localparam int unsigned ASSOCIATED_DATA1_ADDR = ASCON_AEAD128_BASE_ADDR + 32'h34;
+localparam int unsigned ASSOCIATED_DATA2_ADDR = ASCON_AEAD128_BASE_ADDR + 32'h38;
+localparam int unsigned ASSOCIATED_DATA3_ADDR = ASCON_AEAD128_BASE_ADDR + 32'h3C;
+
+localparam logic ASSOCIATED_DATA0_RW = READ_WRITE;
+localparam logic ASSOCIATED_DATA1_RW = READ_WRITE;
+localparam logic ASSOCIATED_DATA2_RW = READ_WRITE;
+localparam logic ASSOCIATED_DATA3_RW = READ_WRITE;
+
+// control register
+localparam int unsigned CONTROL_ADDR = ASCON_AEAD128_BASE_ADDR + 32'h40;
+
+localparam logic CONTROL_RW = READ_WRITE;
+
+// data output registers
+localparam int unsigned DOUT0_ADDR = ASCON_AEAD128_BASE_ADDR + 32'h44;
+localparam int unsigned DOUT1_ADDR = ASCON_AEAD128_BASE_ADDR + 32'h48;
+localparam int unsigned DOUT2_ADDR = ASCON_AEAD128_BASE_ADDR + 32'h4C;
+localparam int unsigned DOUT3_ADDR = ASCON_AEAD128_BASE_ADDR + 32'h50;
+
+localparam logic DOUT0_RW = READ_ONLY;
+localparam logic DOUT1_RW = READ_ONLY;
+localparam logic DOUT2_RW = READ_ONLY;
+localparam logic DOUT3_RW = READ_ONLY;
+
+// tag registers
+localparam int unsigned TAG0_ADDR = ASCON_AEAD128_BASE_ADDR + 32'h54;
+localparam int unsigned TAG1_ADDR = ASCON_AEAD128_BASE_ADDR + 32'h58;
+localparam int unsigned TAG2_ADDR = ASCON_AEAD128_BASE_ADDR + 32'h5C;
+localparam int unsigned TAG3_ADDR = ASCON_AEAD128_BASE_ADDR + 32'h60;
+
+localparam logic TAG0_RW = READ_ONLY;
+localparam logic TAG1_RW = READ_ONLY;
+localparam logic TAG2_RW = READ_ONLY;
+localparam logic TAG3_RW = READ_ONLY;
+
+// status register
+localparam int unsigned STATUS_ADDR = ASCON_AEAD128_BASE_ADDR + 32'h64;
+
+localparam logic STATUS_RW = READ_ONLY;
+
 endpackage
