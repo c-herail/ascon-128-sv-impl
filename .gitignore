@@ -2,6 +2,7 @@
 
 /simu
 /synth
+/doc
 
 transcript
 *.vstf

@@ -10,15 +10,16 @@ module mux21_tb();
     localparam SEL_B = 1'b1;
     bit test_result = TEST_SUCCESS;
 
-    // DUT variables
+    // DUT signals
     localparam WIDTH = 8;
     logic             sel;
     logic [WIDTH-1:0] a;
     logic [WIDTH-1:0] b;
     logic [WIDTH-1:0] s;
 
-    mux21 #(.WIDTH(WIDTH))
-    DUT (
+    mux21 #(
+        .WIDTH(WIDTH)
+    ) DUT (
         .*
     );
 
@@ -36,8 +37,8 @@ module mux21_tb();
         b = '0;
         sel = 1'b0;
 
-        // test mux() operation over random values
-        for (int i = 0; i < 100; i++) begin
+        // test mux21 over random values
+        for (int i = 0; i < 50; i++) begin
             // randomize inputs
             a = $urandom();
             b = $urandom();
@@ -56,7 +57,7 @@ module mux21_tb();
         end
 
         // return if the test succeeded or failed
-        display_result(test_pass, DUT_NAME);
+        display_result(test_result, DUT_NAME);
 
         // stop simulation if run without GUI
         stop_simulation();

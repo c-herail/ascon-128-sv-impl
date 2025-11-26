@@ -12,7 +12,7 @@ module mux41_tb();
     localparam SEL_D = 2'b11;
     bit test_result = TEST_SUCCESS;
 
-    // DUT variables
+    // DUT signals
     localparam WIDTH = 8;
     logic [1:0]       sel;
     logic [WIDTH-1:0] a;
@@ -21,8 +21,9 @@ module mux41_tb();
     logic [WIDTH-1:0] d;
     logic [WIDTH-1:0] s;
 
-    mux41 #(.WIDTH(WIDTH))
-    DUT (
+    mux41 #(
+        .WIDTH(WIDTH)
+    ) DUT (
         .*
     );
 
@@ -42,7 +43,7 @@ module mux41_tb();
         d = '0;
         sel = 2'b0;
 
-        // test mux() operation over random values
+        // test mux41 over random values
         for (int i = 0; i < 100; i++) begin
             // randomize inputs
             a = $urandom();
@@ -70,7 +71,7 @@ module mux41_tb();
         end
 
         // return if the test succeeded or failed
-        display_result(test_pass, DUT_NAME);
+        display_result(test_result, DUT_NAME);
 
         // stop simulation if run without GUI
         stop_simulation();

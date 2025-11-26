@@ -96,4 +96,131 @@ localparam logic [1:0] SEL_KEY_NO_XOR = 2'd0;
 localparam logic SEL_TAG  = 1'b1;
 localparam logic SEL_DATA = 1'b0;
 
+/** parameters for axi4-lite interface ****************************************/
+
+function int byte_offset_to_index(int byte_offset);
+    return byte_offset >> 2;
+endfunction
+
+function int index_to_byte_offset(int index);
+    return 4*index;
+endfunction
+
+// AXI4-Lite responses
+localparam logic [1:0] OKAY   = 2'b00;
+localparam logic [1:0] SLVERR = 2'b10;
+
+localparam logic READ_ONLY  = 1'b0;
+localparam logic READ_WRITE = 1'b1;
+
+// nonce registers
+localparam int unsigned NONCE0 = 0;
+localparam int unsigned NONCE1 = 1;
+localparam int unsigned NONCE2 = 2;
+localparam int unsigned NONCE3 = 3;
+
+localparam int unsigned NONCE0_OFFSET = index_to_byte_offset(NONCE0);
+localparam int unsigned NONCE1_OFFSET = index_to_byte_offset(NONCE1);
+localparam int unsigned NONCE2_OFFSET = index_to_byte_offset(NONCE2);
+localparam int unsigned NONCE3_OFFSET = index_to_byte_offset(NONCE3);
+
+localparam logic NONCE0_RW = READ_WRITE;
+localparam logic NONCE1_RW = READ_WRITE;
+localparam logic NONCE2_RW = READ_WRITE;
+localparam logic NONCE3_RW = READ_WRITE;
+
+// key registers
+localparam int unsigned KEY0 = 4;
+localparam int unsigned KEY1 = 5;
+localparam int unsigned KEY2 = 6;
+localparam int unsigned KEY3 = 7;
+
+localparam int unsigned KEY0_OFFSET = index_to_byte_offset(KEY0);
+localparam int unsigned KEY1_OFFSET = index_to_byte_offset(KEY1);
+localparam int unsigned KEY2_OFFSET = index_to_byte_offset(KEY2);
+localparam int unsigned KEY3_OFFSET = index_to_byte_offset(KEY3);
+
+localparam logic KEY0_RW = READ_WRITE;
+localparam logic KEY1_RW = READ_WRITE;
+localparam logic KEY2_RW = READ_WRITE;
+localparam logic KEY3_RW = READ_WRITE;
+
+// data input registers
+localparam int unsigned DIN0 = 8;
+localparam int unsigned DIN1 = 9;
+localparam int unsigned DIN2 = 10;
+localparam int unsigned DIN3 = 11;
+
+localparam int unsigned DIN0_OFFSET = index_to_byte_offset(DIN0);
+localparam int unsigned DIN1_OFFSET = index_to_byte_offset(DIN1);
+localparam int unsigned DIN2_OFFSET = index_to_byte_offset(DIN2);
+localparam int unsigned DIN3_OFFSET = index_to_byte_offset(DIN3);
+
+localparam logic DIN0_RW = READ_WRITE;
+localparam logic DIN1_RW = READ_WRITE;
+localparam logic DIN2_RW = READ_WRITE;
+localparam logic DIN3_RW = READ_WRITE;
+
+// associated data registers
+localparam int unsigned AD0 = 12;
+localparam int unsigned AD1 = 13;
+localparam int unsigned AD2 = 14;
+localparam int unsigned AD3 = 15;
+
+localparam int unsigned AD0_ADDR = index_to_byte_offset(AD0);
+localparam int unsigned AD1_ADDR = index_to_byte_offset(AD1);
+localparam int unsigned AD2_ADDR = index_to_byte_offset(AD2);
+localparam int unsigned AD3_ADDR = index_to_byte_offset(AD3);
+
+localparam logic AD0_RW = READ_WRITE;
+localparam logic AD1_RW = READ_WRITE;
+localparam logic AD2_RW = READ_WRITE;
+localparam logic AD3_RW = READ_WRITE;
+
+// control register
+localparam int unsigned CONTROL = 16;
+
+localparam int unsigned CONTROL_ADDR = index_to_byte_offset(CONTROL);
+
+localparam logic CONTROL_RW = READ_WRITE;
+
+// data output registers
+localparam int unsigned DOUT0 = 17;
+localparam int unsigned DOUT1 = 18;
+localparam int unsigned DOUT2 = 19;
+localparam int unsigned DOUT3 = 20;
+
+localparam int unsigned DOUT0_ADDR = index_to_byte_offset(DOUT0);
+localparam int unsigned DOUT1_ADDR = index_to_byte_offset(DOUT1);
+localparam int unsigned DOUT2_ADDR = index_to_byte_offset(DOUT2);
+localparam int unsigned DOUT3_ADDR = index_to_byte_offset(DOUT3);
+
+localparam logic DOUT0_RW = READ_ONLY;
+localparam logic DOUT1_RW = READ_ONLY;
+localparam logic DOUT2_RW = READ_ONLY;
+localparam logic DOUT3_RW = READ_ONLY;
+
+// tag registers
+localparam int unsigned TAG0 = 21;
+localparam int unsigned TAG1 = 22;
+localparam int unsigned TAG2 = 23;
+localparam int unsigned TAG3 = 24;
+
+localparam int unsigned TAG0_ADDR = index_to_byte_offset(TAG0);
+localparam int unsigned TAG1_ADDR = index_to_byte_offset(TAG1);
+localparam int unsigned TAG2_ADDR = index_to_byte_offset(TAG2);
+localparam int unsigned TAG3_ADDR = index_to_byte_offset(TAG3);
+
+localparam logic TAG0_RW = READ_ONLY;
+localparam logic TAG1_RW = READ_ONLY;
+localparam logic TAG2_RW = READ_ONLY;
+localparam logic TAG3_RW = READ_ONLY;
+
+// status register
+localparam int unsigned STATUS = 25;
+
+localparam int unsigned STATUS_ADDR = index_to_byte_offset(STATUS);
+
+localparam logic STATUS_RW = READ_ONLY;
+
 endpackage

@@ -16,7 +16,7 @@ module ps (
 
     genvar i;
     generate
-        for (i = 0; i < 64; i++) begin
+        for (i = 0; i < 64; i++) begin : gen_sbox
             sbox sbox_inst (
                 .source_column({current_state.s0[i],
                                 current_state.s1[i],
