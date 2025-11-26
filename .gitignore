@@ -1,7 +1,6 @@
 *.vscode
 
-/simu
-/synth
+*/ascon_lib
 /doc
 
 transcript
