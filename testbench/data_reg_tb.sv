@@ -7,7 +7,7 @@ module data_reg_tb();
     // DUT variables
     localparam WIDTH = 8;
     logic             clk;
-    logic             rst;
+    logic             rst_n;
     logic             en;
     logic [WIDTH-1:0] d;
     logic [WIDTH-1:0] q;
@@ -17,8 +17,9 @@ module data_reg_tb();
     logic [WIDTH-1:0] previous_d;
     bit test_result = TEST_SUCCESS;
 
-    data_reg #(.WIDTH(WIDTH))
-    DUT (
+    data_reg #(
+        .WIDTH(WIDTH)
+    ) DUT (
         .*
     );
 
@@ -38,17 +39,29 @@ module data_reg_tb();
     initial begin : main
         // init
         previous_d = '0;
-        rst = 1'b0;
+        rst_n = 1'b0;
         en = 1'b0;
         d = '0;
 
-        //
-        for (int i = 0; i < 100; i++) begin
-            @(posedge clk);
-            rst = $urandom();
+        @(posedge clk);
+        rst_n = 1'b1;
+
+        // test data_reg over random values
+        for (int i = 0; i < 50; i++) begin
             en = $urandom();
-            d = $urandom();
-            previous_d = d;
+            d  = $urandom();
+
+            if (en == 1'b1) begin
+                previous_d = d;
+            end
+
+            @(posedge clk);
+            #1;
+
+            if (q != previous_d) begin
+                test_result = TEST_FAILED;
+                $display("time: %d expected : %h, actual : %h", $time, previous_d, q);
+            end
         end
 
         // return if the test succeeded or failed

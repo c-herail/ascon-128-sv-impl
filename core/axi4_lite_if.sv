@@ -1,11 +1,9 @@
-interface axi4_lite #(
+interface axi4_lite_if #(
     ADDRESS_WIDTH = 32,
     DATA_WIDTH = 32 );
 
     localparam STRB_WIDTH = DATA_WIDTH/8;
 
-    logic                     ack;
-    logic                     aresetn;
     logic [ADDRESS_WIDTH-1:0] araddr;
     logic                     arvalid;
     logic                     arready;
@@ -28,8 +26,6 @@ interface axi4_lite #(
 
     // manager interface
     modport m (
-        input  ack,
-        input  aresetn,
         output araddr,
         output arvalid,
         input  arready,
@@ -53,8 +49,6 @@ interface axi4_lite #(
 
     // subordinate interface
     modport s (
-        input  ack,
-        input  aresetn,
         input  araddr,
         input  arvalid,
         output arready,
@@ -76,4 +70,4 @@ interface axi4_lite #(
         output bresp
     );
 
-endinterface : axi4_lite
+endinterface : axi4_lite_if
