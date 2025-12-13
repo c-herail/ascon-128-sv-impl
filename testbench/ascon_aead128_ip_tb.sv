@@ -30,13 +30,27 @@ module ascon_aead128_ip_tb ();
     logic [127:0] rd_val = '0;
 
     // DUT signals
-    logic aclk;
-    logic aresetn;
-
-    axi4_lite_if #(
-        .ADDRESS_WIDTH(7),
-        .DATA_WIDTH(32)
-    ) axi();
+    logic        aclk;
+    logic        aresetn;
+    logic [6:0]  araddr;
+    logic        arvalid;
+    logic        arready;
+    logic [2:0]  arprot;
+    logic [31:0] rdata;
+    logic        rvalid;
+    logic        rready;
+    logic [1:0]  rresp;
+    logic [6:0]  awaddr;
+    logic        awvalid;
+    logic        awready;
+    logic [2:0]  awprot;
+    logic [31:0] wdata;
+    logic [3:0]  wstrb;
+    logic        wvalid;
+    logic        wready;
+    logic        bvalid;
+    logic        bready;
+    logic [1:0]  bresp;
 
     ascon_aead128_ip DUT (
         .*
@@ -52,21 +66,25 @@ module ascon_aead128_ip_tb ();
         foreach(p_arr[k]) begin
             $display("p : %h", {p_arr[k].msb, p_arr[k].lsb});
         end
+        foreach(c_arr[k]) begin
+            $display("c : %h", {c_arr[k].msb, c_arr[k].lsb});
+        end
+        $display("tag : %h", {t.msb, t.lsb});
     endtask
 
     task perform_reset;
         aresetn = 1'b0;
-        axi.awaddr  = '0;
-        axi.awprot  = 3'b0;
-        axi.awvalid = 1'b0;
-        axi.wdata   = '0;
-        axi.wstrb   = 4'b0;
-        axi.wvalid  = 1'b0;
-        axi.bready  = 1'b0;
-        axi.araddr  = '0;
-        axi.arprot  = 3'b0;
-        axi.arvalid = 1'b0;
-        axi.rready  = 1'b0;
+        awaddr  = '0;
+        awprot  = 3'b0;
+        awvalid = 1'b0;
+        wdata   = '0;
+        wstrb   = 4'b0;
+        wvalid  = 1'b0;
+        bready  = 1'b0;
+        araddr  = '0;
+        arprot  = 3'b0;
+        arvalid = 1'b0;
+        rready  = 1'b0;
         @(posedge aclk);
         @(posedge aclk);
         aresetn = 1'b1;
@@ -75,31 +93,31 @@ module ascon_aead128_ip_tb ();
     task write(int index, logic [31:0] value, logic [3:0] mask = 4'b1111);
         fork
             begin
-                axi.awaddr  = index_to_byte_offset(index);
-                axi.awvalid = 1'b1;
+                awaddr  = index_to_byte_offset(index);
+                awvalid = 1'b1;
                 do begin
                     @(posedge aclk);
-                end while (axi.awready != 1'b1);
-                axi.awaddr  = '0;
-                axi.awvalid = 1'b0;
+                end while (awready != 1'b1);
+                awaddr  = '0;
+                awvalid = 1'b0;
             end
             begin
-                axi.wdata  = value;
-                axi.wstrb  = mask;
-                axi.wvalid = 1'b1;
+                wdata  = value;
+                wstrb  = mask;
+                wvalid = 1'b1;
                 do begin
                     @(posedge aclk);
-                end while (axi.wready != 1'b1);
-                axi.wdata  = '0;
-                axi.wstrb  = 4'b0;
-                axi.wvalid = 1'b0;
+                end while (wready != 1'b1);
+                wdata  = '0;
+                wstrb  = 4'b0;
+                wvalid = 1'b0;
             end
         join
-        axi.bready = 1'b1;
+        bready = 1'b1;
         do begin
             @(posedge aclk);
-        end while (axi.bvalid != 1'b1);
-        axi.bready = 1'b0;
+        end while (bvalid != 1'b1);
+        bready = 1'b0;
     endtask
 
     task write_128(int index, logic [127:0] value);
@@ -110,29 +128,29 @@ module ascon_aead128_ip_tb ();
     endtask
 
     task read(int index);
-        axi.araddr = index_to_byte_offset(index);
-        axi.arvalid = 1'b1;
+        araddr = index_to_byte_offset(index);
+        arvalid = 1'b1;
         do begin
             @(posedge aclk);
-        end while (axi.arready != 1'b1);
-        axi.araddr = '0;
-        axi.arvalid = 1'b0;
-        axi.rready = 1'b1;
+        end while (arready != 1'b1);
+        araddr = '0;
+        arvalid = 1'b0;
+        rready = 1'b1;
         do begin
             @(posedge aclk);
-        end while (axi.rvalid != 1'b1);
-        axi.rready = 1'b0;
+        end while (rvalid != 1'b1);
+        rready = 1'b0;
     endtask
 
     task read_128(int index, output logic [127:0] read_val);
         read(index);
-        read_val[31:0] = axi.rdata;
+        read_val[31:0] = rdata;
         read(index+1);
-        read_val[63:32] = axi.rdata;
+        read_val[63:32] = rdata;
         read(index+2);
-        read_val[95:64] = axi.rdata;
+        read_val[95:64] = rdata;
         read(index+3);
-        read_val[127:96] = axi.rdata;
+        read_val[127:96] = rdata;
     endtask
 
     task randomize_inputs;
@@ -151,11 +169,11 @@ module ascon_aead128_ip_tb ();
     endtask
 
     task wait_ready;
-        do read(STATUS); while (axi.rdata[0] != 1'b1);
+        do read(STATUS); while (rdata[0] != 1'b1);
     endtask
 
     task wait_end_aead;
-        do read(STATUS); while (axi.rdata[1] != 1'b1);
+        do read(STATUS); while (rdata[1] != 1'b1);
     endtask
 
     task initialisation(bit mode);
@@ -164,7 +182,6 @@ module ascon_aead128_ip_tb ();
         // set start and sel mode
         ctrl_reg = {30'b0, mode, 1'b1};
         write(CONTROL, ctrl_reg);
-        write(16, ctrl_reg);
     endtask
 
    task associated_data;

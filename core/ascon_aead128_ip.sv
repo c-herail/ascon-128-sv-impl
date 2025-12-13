@@ -1,16 +1,38 @@
 /*******************************************************************************
  * module name : ascon_aead128_ip
  * version     : 1.0
- * description :
-
+ * description : Ascon-AEAD IP with a 32-bit AXI4-Lite interface.
  ******************************************************************************/
 
 import ascon_aead128_pkg::*;
 
 module ascon_aead128_ip (
-    input  logic   aclk,
-    input  logic   aresetn,
-    axi4_lite_if.s axi );
+    input  logic        aclk,
+    input  logic        aresetn,
+    // AR channel signals
+    input  logic [6:0]  araddr,
+    input  logic        arvalid,
+    output logic        arready,
+    input  logic [2:0]  arprot,
+    // R channel signals
+    output logic [31:0] rdata,
+    output logic        rvalid,
+    input  logic        rready,
+    output logic [1:0]  rresp,
+    // AW channel signals
+    input  logic [6:0]  awaddr,
+    input  logic        awvalid,
+    output logic        awready,
+    input  logic [2:0]  awprot,
+    // W channel signals
+    input  logic [31:0] wdata,
+    input  logic [3:0]  wstrb,
+    input  logic        wvalid,
+    output logic        wready,
+    // B channel signals
+    output logic        bvalid,
+    input  logic        bready,
+    output logic [1:0]  bresp );
 
     localparam integer WTSRB_WIDTH = 4;
 
@@ -87,7 +109,7 @@ module ascon_aead128_ip (
         wr_next_state = wr_current_state;
         case (wr_current_state)
             WR_IDLE: begin
-                if ((axi.awvalid & axi.wvalid) == 1'b1) begin
+                if (awvalid & wvalid) begin
                     wr_next_state = WR_WRITE;
                 end
             end
@@ -95,7 +117,7 @@ module ascon_aead128_ip (
                 wr_next_state = WR_RESP;
             end
             WR_RESP: begin
-                if (axi.bready == 1'b1) begin
+                if (bready) begin
                     wr_next_state = WR_IDLE;
                 end
             end
@@ -104,25 +126,25 @@ module ascon_aead128_ip (
 
     always_comb begin : wr_output_comb
         // default write outputs
-        axi.awready = 1'b0;
-        axi.wready  = 1'b0;
-        axi.bvalid  = 1'b0;
-        axi.bresp   = 2'b0;
+        awready = 1'b0;
+        wready  = 1'b0;
+        bvalid  = 1'b0;
+        bresp   = 2'b0;
         case (wr_current_state)
             WR_WRITE: begin
-                axi.awready = 1'b1;
-                axi.wready  = 1'b1;
+                awready = 1'b1;
+                wready  = 1'b1;
             end
             WR_RESP: begin
                 // if wr_error = 1 SLVERROR is returned else OKAY is returned
-                axi.bresp = {wr_error, 1'b0};
-                axi.bvalid = 1'b1;
+                bresp = {wr_error, 1'b0};
+                bvalid = 1'b1;
             end
         endcase
     end
 
     always_comb begin : get_wr_index
-        wr_index = axi.awaddr >> 2;
+        wr_index = awaddr >> 2;
     end
 
     always_ff @(posedge aclk, negedge aresetn) begin : wr
@@ -134,7 +156,7 @@ module ascon_aead128_ip (
             end
         end
         else begin
-            if ((axi.awvalid & axi.wvalid) == 1'b1) begin
+            if (awvalid & wvalid) begin
                 if (wr_index > NB_REG_RW-1) begin
                     // error if user try to write in a read-only register
                     wr_error <= 1'b1;
@@ -142,8 +164,8 @@ module ascon_aead128_ip (
                 else begin
                     // no error
                     wr_error <= 1'b0;
-                    for (int i = 0; i < WTSRB_WIDTH; i++) begin
-                        regs_rw[wr_index][(i*8) +: 8] <= axi.wdata[(i*8) +: 8];
+                    for (int i = 0; i < 4; i++) begin
+                        regs_rw[wr_index][(i*8) +: 8] <= wdata[(i*8) +: 8];
                     end
                 end
             end
@@ -169,12 +191,12 @@ module ascon_aead128_ip (
                 rd_next_state = RD_IDLE;
             end
             RD_IDLE: begin
-                if (axi.arvalid == 1'b1) begin
+                if (arvalid) begin
                     rd_next_state = RD_READ;
                 end
             end
             RD_READ: begin
-                if (axi.rready == 1'b1) begin
+                if (rready) begin
                     rd_next_state = RD_IDLE;
                 end
             end
@@ -186,23 +208,23 @@ module ascon_aead128_ip (
 
     always_comb begin : rd_output_comb
         // default read outputs
-        axi.arready = 1'b0;
-        axi.rvalid  = 1'b0;
-        axi.rresp   = 2'b0;
-        axi.rdata   = '0;
+        arready = 1'b0;
+        rvalid  = 1'b0;
+        rresp   = 2'b0;
+        rdata   = '0;
         case (rd_current_state)
             RD_IDLE: begin
-                axi.arready = 1'b1;
+                arready = 1'b1;
             end
             RD_READ: begin
-                axi.rvalid = 1'b1;
+                rvalid = 1'b1;
                 if (rd_index < NB_REG) begin
                     // valid data is returned
-                    axi.rdata = regs[rd_index];
+                    rdata = regs[rd_index];
                 end
                 else begin
                     // SLVERR response "10" is returned
-                    axi.rresp = 2'b10;
+                    rresp = 2'b10;
                 end
             end
         endcase
@@ -213,8 +235,8 @@ module ascon_aead128_ip (
             rd_index <= '0;
         end
         else begin
-            if (axi.arvalid == 1'b1) begin
-                rd_index <= axi.araddr >> 2;
+            if (arvalid) begin
+                rd_index <= araddr >> 2;
             end
         end
     end
@@ -254,28 +276,28 @@ module ascon_aead128_ip (
 
     always_ff @(posedge aclk, negedge aresetn) begin : valid_gen
         if (!aresetn) begin
-            din_status <= '0;
-            ad_status  <= '0;
+            din_status    <= '0;
+            ad_status     <= '0;
             valid_ad_s    <= 1'b0;
             valid_db_in_s <= 1'b0;
         end
         else begin
             for (int i = 0; i < 4; i++) begin
-                if ((wr_index == DIN0 + i) && ((axi.awvalid) == 1'b1) && (axi.wvalid == 1'b1)) begin
+                if ((wr_index == DIN0 + i) && (awvalid & wvalid)) begin
                     din_status[i] <= 1'b1;
                 end
-                if ((wr_index == AD0 + i) && ((axi.awvalid & axi.wvalid) == 1'b1)) begin
+                if ((wr_index == AD0 + i) && (awvalid & wvalid)) begin
                     ad_status[i] <= 1'b1;
                 end
             end
-            if (din_status == 4'b1111 && ready_s == 1'b1) begin
+            if (din_status == 4'b1111 && ready_s) begin
                 din_status <= '0;
                 valid_db_in_s <= 1'b1;
             end
             else begin
                 valid_db_in_s <= 1'b0;
             end
-            if (ad_status == 4'b1111 && ready_s == 1'b1) begin
+            if (ad_status == 4'b1111 && ready_s) begin
                 ad_status <= '0;
                 valid_ad_s <= 1'b1;
             end

@@ -12,33 +12,33 @@ if {$gui_mode} {
     add wave -noupdate /ascon_aead128_ip_tb/DUT/aresetn
 
     add wave -noupdate -divider {AR CHANNEL}
-    add wave -noupdate                    /ascon_aead128_ip_tb/DUT/axi.arprot
-    add wave -noupdate -radix hexadecimal /ascon_aead128_ip_tb/DUT/axi.araddr
-    add wave -noupdate                    /ascon_aead128_ip_tb/DUT/axi.arvalid
-    add wave -noupdate                    /ascon_aead128_ip_tb/DUT/axi.arready
+    add wave -noupdate                    /ascon_aead128_ip_tb/DUT/arprot
+    add wave -noupdate -radix hexadecimal /ascon_aead128_ip_tb/DUT/araddr
+    add wave -noupdate                    /ascon_aead128_ip_tb/DUT/arvalid
+    add wave -noupdate                    /ascon_aead128_ip_tb/DUT/arready
 
     add wave -noupdate -divider {R CHANNEL}
-    add wave -noupdate -radix hexadecimal /ascon_aead128_ip_tb/DUT/axi.rdata
-    add wave -noupdate                    /ascon_aead128_ip_tb/DUT/axi.rresp
-    add wave -noupdate                    /ascon_aead128_ip_tb/DUT/axi.rvalid
-    add wave -noupdate                    /ascon_aead128_ip_tb/DUT/axi.rready
+    add wave -noupdate -radix hexadecimal /ascon_aead128_ip_tb/DUT/rdata
+    add wave -noupdate                    /ascon_aead128_ip_tb/DUT/rresp
+    add wave -noupdate                    /ascon_aead128_ip_tb/DUT/rvalid
+    add wave -noupdate                    /ascon_aead128_ip_tb/DUT/rready
 
     add wave -noupdate -divider {AW CHANNEL}
-    add wave -noupdate                    /ascon_aead128_ip_tb/DUT/axi.awprot
-    add wave -noupdate -radix hexadecimal /ascon_aead128_ip_tb/DUT/axi.awaddr
-    add wave -noupdate                    /ascon_aead128_ip_tb/DUT/axi.awvalid
-    add wave -noupdate                    /ascon_aead128_ip_tb/DUT/axi.awready
+    add wave -noupdate                    /ascon_aead128_ip_tb/DUT/awprot
+    add wave -noupdate -radix hexadecimal /ascon_aead128_ip_tb/DUT/awaddr
+    add wave -noupdate                    /ascon_aead128_ip_tb/DUT/awvalid
+    add wave -noupdate                    /ascon_aead128_ip_tb/DUT/awready
 
     add wave -noupdate -divider {W CHANNEL}
-    add wave -noupdate                    /ascon_aead128_ip_tb/DUT/axi.wstrb
-    add wave -noupdate -radix hexadecimal /ascon_aead128_ip_tb/DUT/axi.wdata
-    add wave -noupdate                    /ascon_aead128_ip_tb/DUT/axi.wvalid
-    add wave -noupdate                    /ascon_aead128_ip_tb/DUT/axi.wready
+    add wave -noupdate                    /ascon_aead128_ip_tb/DUT/wstrb
+    add wave -noupdate -radix hexadecimal /ascon_aead128_ip_tb/DUT/wdata
+    add wave -noupdate                    /ascon_aead128_ip_tb/DUT/wvalid
+    add wave -noupdate                    /ascon_aead128_ip_tb/DUT/wready
 
     add wave -noupdate -divider {B CHANNEL}
-    add wave -noupdate /ascon_aead128_ip_tb/DUT/axi.bresp
-    add wave -noupdate /ascon_aead128_ip_tb/DUT/axi.bvalid
-    add wave -noupdate /ascon_aead128_ip_tb/DUT/axi.bready
+    add wave -noupdate /ascon_aead128_ip_tb/DUT/bresp
+    add wave -noupdate /ascon_aead128_ip_tb/DUT/bvalid
+    add wave -noupdate /ascon_aead128_ip_tb/DUT/bready
 
     add wave -noupdate -divider {ASCON REGISTERS}
     add wave -noupdate -radix hexadecimal /ascon_aead128_ip_tb/DUT/regs
@@ -62,6 +62,7 @@ if {$gui_mode} {
     add wave -noupdate                    /ascon_aead128_ip_tb/DUT/core/FSM/current_state_s
 
     add wave -noupdate                    /ascon_aead128_ip_tb/DUT/din_status
+    add wave -noupdate                    /ascon_aead128_ip_tb/DUT/ad_status
 
     WaveRestoreCursors [list {Cursor 1} $RUNTIME 0]
     WaveRestoreZoom {0 ps} $RUNTIME

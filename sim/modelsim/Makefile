@@ -62,9 +62,6 @@ ascon_aead128_tb_pkg: ascon_aead128_pkg ascon_aead128_dpi_pkg
 
 #========== CORE ===============================================================
 
-axi4_lite_if: init
-	vlog -sv +acc -svinputport=net -work rtl_lib $(RTL_DIR)/$@.sv
-
 pc: ascon_aead128_pkg
 	vlog -sv +acc -svinputport=net -work rtl_lib $(RTL_DIR)/$@.sv
 
@@ -101,7 +98,7 @@ fsm: init ascon_aead128_pkg
 ascon_aead128_core: data_path fsm round_counter
 	vlog -sv +acc -svinputport=net -work rtl_lib $(RTL_DIR)/$@.sv
 
-ascon_aead128_ip: axi4_lite_if ascon_aead128_core
+ascon_aead128_ip: ascon_aead128_core
 	vlog -sv +acc -svinputport=net -work rtl_lib $(RTL_DIR)/$@.sv
 
 #========== TESTBENCH ==========================================================

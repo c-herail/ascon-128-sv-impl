@@ -7,3 +7,6 @@ transcript
 *.vstf
 *.wlf
 *.ini
+
+/ip_packaging/vivado/*
+!/ip_packaging/vivado/package_ip.tcl
